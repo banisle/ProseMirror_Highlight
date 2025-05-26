@@ -1,5 +1,7 @@
 <template>
+<div class="editor-wrap">
 <div ref="editorContainer" class="editor-container"></div>
+</div>
 </template>
 <script setup>
 import { onMounted, ref, onBeforeUnmount } from 'vue'
@@ -18,18 +20,45 @@ function keywordHighlighter(state) {
   const keywords = [
     { word: '건강', class: 'highlight-yellow' },
     { word: '주택', class: 'highlight-red' },
+    { word: '공공청약', class: 'highlight-sky', wrapWithbracket: true, },
   ]
 
   state.doc.descendants((node, pos) => {
     if (!node.isText) return true
     const text = node.text
-    keywords.forEach(({ word, class: className }) => {
+
+    keywords.forEach(({ word, class: className, wrapWithbracket }) => {
       let fromIndex = 0
       let index = text.indexOf(word, fromIndex)
+
       while (index !== -1) {
-        decorations.push(
-          Decoration.inline(pos + index, pos + index + word.length, { class: className })
-        )
+        const from = pos + index
+        const to  = from + word.length
+
+        const deco = Decoration.inline(from, to, {
+          class: className,
+        })
+
+        decorations.push(deco)
+
+        if(wrapWithbracket){
+          decorations.push(
+            Decoration.widget(from, () => {
+            const span = document.createElement('span')
+            span.textContent = '*'
+            span.style.color = '#3399FF'
+            return span
+          }),
+          Decoration.widget(to, () => {
+            const span = document.createElement('span')
+            span.textContent = '*'
+            span.style.color = '#3399FF'
+            return span
+          })
+         )
+
+        }
+
         fromIndex = index + word.length
         index = text.indexOf(word, fromIndex)
       }
@@ -70,12 +99,20 @@ onBeforeUnmount(() => {
 </script>
 
 <style >
+.editor-wrap{
+  width: 500px;
+  height: 250px;
+}
+.editor-container{
+  width: 100%;
+  height: 100%;
+}
 .ProseMirror {
   border: 1px solid #ccc;
   padding: 10px;
   width: 100%;
-  min-height: 150px;
-  font-size: 16px;
+  height: 100%;
+  font-size: 13px;
   text-align: left;
   line-height: 1.4em;
 }
@@ -91,5 +128,12 @@ onBeforeUnmount(() => {
 .highlight-red {
   color: red;
   font-weight: bold;
+}
+
+.highlight-sky {
+  background-color: #d0ecff;
+  font-weight: bold;
+  color: #003366;
+  border-radius: 4px;
 }
 </style>
