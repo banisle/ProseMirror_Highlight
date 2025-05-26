@@ -1,7 +1,5 @@
 <template>
-<div class="editor-wrap">
 <div ref="editorContainer" class="editor-container"></div>
-</div>
 </template>
 <script setup>
 import { onMounted, ref, onBeforeUnmount } from 'vue'
@@ -99,19 +97,12 @@ onBeforeUnmount(() => {
 </script>
 
 <style >
-.editor-wrap{
-  width: 500px;
-  height: 250px;
-}
-.editor-container{
-  width: 100%;
-  height: 100%;
-}
 .ProseMirror {
+  overflow-y: auto;
   border: 1px solid #ccc;
   padding: 10px;
-  width: 100%;
-  height: 100%;
+  width: 500px;
+  height: 250px;
   font-size: 13px;
   text-align: left;
   line-height: 1.4em;
